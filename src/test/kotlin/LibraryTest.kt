@@ -8,10 +8,16 @@ class LibraryTest {
         val imdbId="tt12345"
         val title = "The Abyss"
         val year=1989
-        val movieInfo:MovieInfo = StubMovieInfo(title,year)
-        val library= Library(movieInfo = movieInfo, emailServer = mockk<EmailServer>(relaxed = true))
+        val movieInfo:MovieInfo= mockk()
+        val info= hashMapOf<String,String>()
+        info.put("title",title)
+        info.put("year",year.toString())
+        every { movieInfo.fetch(any()) } returns info
+
+        val library= Library(movieInfo = movieInfo, emailServer = mockk(relaxed = true))
         library.donate(imdbId)
         val movie:Movie = library.findMovie(imdbId)
+
         assertEquals(title,movie.title)
         assertEquals(year,movie.year)
     }
@@ -28,23 +34,14 @@ class LibraryTest {
         val info= hashMapOf<String,String>()
         info.put("title",title)
         info.put("year",year)
+
         every { movieInfo.fetch(any()) } returns info
 
         val library= Library(movieInfo = movieInfo, emailServer = emailServer)
         library.donate(imdbId)
+
         verify {
             emailServer.send(subjet = "New Movie", recepient = "All Members", params = arrayOf(title,year))
         }
     }
-
  }
-
-class StubMovieInfo( val title: String,val year: Int): MovieInfo {
-    override fun fetch(imdbId: String): HashMap<String, String> {
-        val info= hashMapOf<String,String>()
-        info.put("title",title)
-        info.put("year",year.toString())
-        return info
-    }
-
-}
