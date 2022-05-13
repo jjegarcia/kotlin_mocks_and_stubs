@@ -1,10 +1,10 @@
-class Library {
+class Library(movieInfo: MovieInfo) {
     fun findMovie(imdbId: String): Movie {
-        TODO("Not yet implemented")
+        return Movie("",0)
     }
 
     fun donate(imdbId: String) {
-        TODO("Not yet implemented")
+
     }
 
 }
