@@ -17,6 +17,12 @@ class LibraryTest {
 
  }
 
-class StubMovieInfo(title: String,year: Int): MovieInfo() {
+class StubMovieInfo( val title: String,val year: Int): MovieInfo {
+    override fun fetch(imdbId: String): HashMap<String, String> {
+        val info= hashMapOf<String,String>()
+        info.put("title",title)
+        info.put("year",year.toString())
+        return info
+    }
 
 }
