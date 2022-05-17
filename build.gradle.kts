@@ -14,6 +14,8 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test"))
+    testImplementation ("io.mockk:mockk:1.12.3")
+    testImplementation ("org.mockito:mockito-core:4.5.1")
 }
 
 tasks.test {
