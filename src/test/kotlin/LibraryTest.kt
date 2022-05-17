@@ -1,47 +1,38 @@
 import io.mockk.*
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class LibraryTest {
+    val imdbId = "tt12345"
+    val title = "The Abyss"
+    val year = 1989
+    val movieInfo: MovieInfo = mockk()
+    val info = hashMapOf("title" to title, "year" to year.toString())
+
     @Test
-    fun donateMovieAddedToCatalogueWithImdbInfo(){
-        val imdbId="tt12345"
-        val title = "The Abyss"
-        val year=1989
-        val movieInfo:MovieInfo= mockk()
-        val info= hashMapOf<String,String>()
-        info.put("title",title)
-        info.put("year",year.toString())
+    fun donateMovieAddedToCatalogueWithImdbInfo() {
         every { movieInfo.fetch(any()) } returns info
 
-        val library= Library(movieInfo = movieInfo, emailServer = mockk(relaxed = true))
+        val library = Library(movieInfo = movieInfo, emailServer = mockk(relaxed = true))
         library.donate(imdbId)
-        val movie:Movie = library.findMovie(imdbId)
+        val movie: Movie = library.findMovie(imdbId)
 
-        assertEquals(title,movie.title)
-        assertEquals(year,movie.year)
+        assertEquals(title, movie.title)
+        assertEquals(year, movie.year)
     }
 
     @Test
-    fun membersEmailedAboutNewTitle(){
-        val imdbId="tt12345"
-        val title = "The Abyss"
-        val year="1989"
-        val emailServer: EmailServer = mockk()
-        every { emailServer.send(any(),any(),any()) } just Runs
-
-        val movieInfo:MovieInfo= mockk()
-        val info= hashMapOf<String,String>()
-        info.put("title",title)
-        info.put("year",year)
+    fun membersEmailedAboutNewTitle() {
+        val emailServer: EmailServer = mockk(relaxed = true)
 
         every { movieInfo.fetch(any()) } returns info
 
-        val library= Library(movieInfo = movieInfo, emailServer = emailServer)
+        val library = Library(movieInfo = movieInfo, emailServer = emailServer)
         library.donate(imdbId)
 
         verify {
-            emailServer.send(subjet = "New Movie", recepient = "All Members", params = arrayOf(title,year))
+            emailServer.send(subjet = "New Movie", recepient = "All Members", params = arrayOf(title, year.toString()))
         }
     }
- }
+}
